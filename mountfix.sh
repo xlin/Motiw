@@ -20,8 +20,6 @@ if [ -f ${WRITELOCK} ]; then
                 fi
 fi
 
-
-
 if [ $filecount -eq 0 ]; then
 echo "Error. Not mount script NFS"
 #Монтируем /var/Motiw/scripts для tomcat

@@ -9,6 +9,19 @@ DIR_OUT="${IP_WEB}:/var/Motiw/scripts"
 filecount=`find $DIR_IN -type f | wc -l`
 date=`date "+%Y-%m-%d %k:%M"`
 
+# Проверяем  дату write.lock. Если меньше чем сегодняшнее число, то удаляем
+if [ -f ${WRITELOCK} ]; then
+        DATE_LOCK=`ls -lt ${WRITELOCK} | awk '{print $7}'`
+        DATE_TOMO=`date +%d`
+
+                if [[ ! $DATE_LOCK == $DATE_TOMO ]]; then
+                    echo "${date} Зависший файл write.lock, удаляем и перезапускаем tomcat" >> /var/log/mountfix.log
+                        rm $WRITELOCK
+                fi
+fi
+
+
+
 if [ $filecount -eq 0 ]; then
 echo "Error. Not mount script NFS"
 #Монтируем /var/Motiw/scripts для tomcat
@@ -37,12 +50,4 @@ else
 #Если все смонтировано, ничего не делаем
 echo "${date} mount OK" >> /var/log/mountfix.log
 
-# Проверяем  дату write.lock. Если меньше чем сегодняшнее число, то удаляем
-DATE_LOCK=`ls -lt ${WRITELOCK} | awk '{print $7}'`
-DATE_TOMO=`date +%d`
-
-        if [[ ! $DATE_LOCK == $DATE_TOMO ]]; then
-                echo "${date} Зависший файл write.lock, удаляем и перезапускаем tomcat" >> /var/log/mountfix.log
-                rm $WRITELOCK
-        fi
 fi
